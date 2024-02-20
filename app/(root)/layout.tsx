@@ -1,26 +1,19 @@
-import prismadb from "@/lib/prismadb"
-import { auth } from "@clerk/nextjs"
-import { redirect } from "next/navigation"
+import { serverActions } from "@/actions/serverActions";
+import { auth } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
-export default async function SetupLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  const { userId } = auth()
+export default async function SetupLayout({ children }: { children: React.ReactNode }) {
+  const { userId } = auth();
+
   if (!userId) {
-    redirect("/sign-in")
+    redirect("/sign-in");
   }
 
-  const store = await prismadb.store.findFirst({
-    where: {
-      userId: userId,
-    },
-  })
+  const store = await serverActions.store.getStore({ userId });
 
   if (store) {
-    redirect(`/${store.id}`)
+    redirect(`/${store.id}`);
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }
