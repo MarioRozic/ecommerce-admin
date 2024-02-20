@@ -4,6 +4,7 @@
 import "server-only";
 import prismadb from "@/lib/prismadb";
 import type { Prisma } from "@prisma/client";
+import { auth } from "@clerk/nextjs";
 
 const setStoreData = async (storeId: string, userId: string, data: Prisma.StoreUpdateInput) => {
   const store = await prismadb.store.update({
@@ -17,18 +18,15 @@ const setStoreData = async (storeId: string, userId: string, data: Prisma.StoreU
   return store;
 };
 
-const getStore = async (storeId: string, userId: string) => {
+export const getStore = async (data: { id?: string; userId: string }) => {
   const store = await prismadb.store.findFirst({
-    where: {
-      id: storeId,
-      userId: userId,
-    },
+    where: data,
   });
 
   return store;
 };
 
-const setStoreName = async (storeId: string, userId: string, name: string) => {
+export const setStoreName = async (storeId: string, userId: string, name: string) => {
   const store = await setStoreData(storeId, userId, {
     name: name,
   });
@@ -36,9 +34,19 @@ const setStoreName = async (storeId: string, userId: string, name: string) => {
   return store;
 };
 
-const storeActions = {
-  getStore,
-  setStoreName,
-};
+export const createStore = async (values: { name: string }) => {
+  const { userId } = auth();
 
-export default storeActions;
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
+
+  const store = await prismadb.store.create({
+    data: {
+      ...values,
+      userId,
+    },
+  });
+
+  return store;
+};

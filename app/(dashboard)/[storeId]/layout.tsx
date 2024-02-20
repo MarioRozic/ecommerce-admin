@@ -9,7 +9,7 @@ export default async function DashboardLayout({ children, params }: { children: 
     redirect("/sign-in");
   }
 
-  const store = await serverActions.store.getStore(params.storeId, userId);
+  const store = await serverActions.store.getStore({ id: params.storeId, userId });
 
   if (!store) {
     redirect("/");

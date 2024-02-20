@@ -1,61 +1,53 @@
-"use client"
+"use client";
 
-import { useStoreModal } from "@/hooks/use-store-modal"
-import { Modal } from "@/components/ui/modal"
-import * as z from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import axios from "axios"
-import toast from "react-hot-toast"
+import { useStoreModal } from "@/hooks/use-store-modal";
+import { Modal } from "@/components/ui/modal";
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { serverActions } from "@/actions/serverActions";
 
 const formSchema = z.object({
   name: z.string().min(1),
-})
+});
 
 export const StoreModal = () => {
-  const storeModal = useStoreModal()
+  const storeModal = useStoreModal();
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: { name: "" },
     resolver: zodResolver(formSchema),
-  })
+  });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values)
+    console.log(values);
     try {
-      setLoading(true)
-      const response = await axios.post("/api/stores", values)
+      setLoading(true);
+      const response = await serverActions.store.createStore(values);
 
       // da se refresha stranica
-      window.location.assign(`/${response.data.id}`)
+      window.location.assign(`/${response.id}`);
     } catch (error) {
-      console.log(error)
-      toast.error("Failed to create store")
+      console.log(error);
+      toast.error("Failed to create store");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Modal
       title="Create Store"
       description="Add new store to manage products and categories"
       isOpen={storeModal.isOpen}
-      onClose={storeModal.onClose}
-    >
+      onClose={storeModal.onClose}>
       <div>
         <div className="space-y-4 py-2 pb-4">
           <Form {...form}>
@@ -67,22 +59,14 @@ export const StoreModal = () => {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input
-                        disabled={loading}
-                        placeholder="E-Commerce"
-                        {...field}
-                      />
+                      <Input disabled={loading} placeholder="E-Commerce" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <div className="pt-6 space-x-2 flex items-center justify-end w-full">
-                <Button
-                  disabled={loading}
-                  variant="outline"
-                  onClick={storeModal.onClose}
-                >
+                <Button disabled={loading} variant="outline" onClick={storeModal.onClose}>
                   Cancel
                 </Button>
                 <Button disabled={loading} type="submit">
@@ -94,5 +78,5 @@ export const StoreModal = () => {
         </div>
       </div>
     </Modal>
-  )
-}
+  );
+};
