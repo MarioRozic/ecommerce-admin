@@ -3,8 +3,9 @@
 // https://nextjs.org/docs/app/building-your-application/rendering/composition-patterns#keeping-server-only-code-out-of-the-client-environment
 import "server-only";
 import prismadb from "@/lib/prismadb";
+import type { Prisma } from "@prisma/client";
 
-const setStoreData = async (storeId: string, userId: string, data: Partial<typeof prismadb.store.create>) => {
+const setStoreData = async (storeId: string, userId: string, data: Prisma.StoreUpdateInput) => {
   const store = await prismadb.store.update({
     where: {
       id: storeId,
