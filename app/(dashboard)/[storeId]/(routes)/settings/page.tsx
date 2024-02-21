@@ -1,13 +1,11 @@
-import Navbar from "@/components/navbar"
 import prismadb from "@/lib/prismadb"
 import { auth } from "@clerk/nextjs"
 import { redirect } from "next/navigation"
+import SettingsForm from "./components/settings-form"
 
-export default async function DashboardLayout({
-  children,
+export default async function SettingsPage({
   params,
 }: {
-  children: React.ReactNode
   params: { storeId: string }
 }) {
   const { userId } = auth()
@@ -23,14 +21,17 @@ export default async function DashboardLayout({
     },
   })
 
+  // console.log(store)
+
   if (!store) {
     redirect("/")
   }
 
   return (
-    <>
-      <Navbar />
-      {children}
-    </>
+    <div className="flex-col">
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <SettingsForm initialData={store} />
+      </div>
+    </div>
   )
 }

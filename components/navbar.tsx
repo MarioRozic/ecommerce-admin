@@ -22,7 +22,7 @@ export default async function Navbar() {
         <StoreSwitcher items={stores} />
         <MainNav className="ml-6" />
         <div className="ml-auto flex items-center space-x-4">
-          <UserButton afterSignOutUrl="/" />
+          <UserButton afterSignOutUrl="/sign-in" />
         </div>
       </div>
     </div>
